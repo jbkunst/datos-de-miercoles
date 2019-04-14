@@ -16,12 +16,20 @@ datos <- datos %>%
   ) %>% 
   # variable auxiliar para geom_mark_rec
   group_by(anio) %>% 
+  mutate(max_goles_mundial = max(goles_totales)) %>% 
+  ungroup() %>% 
   mutate(
-    notar = ifelse(anio != 1998 & anio > 1986 & goles_totales == max(goles_totales), TRUE, FALSE),
-    descripcion = ifelse(notar, "En los últimos 30 años\nla máxima cantidad de goles\nha ido a la baja", "")
-    ) %>% 
-  ungroup()
-
+    grupo = case_when(
+      anio > 1986 & goles_totales == max_goles_mundial ~ 1,
+      anio >= 2010 & (1 <= goles_totales) & (goles_totales <= 3) ~ 2,
+      TRUE ~ 0
+      ),
+    descripcion = case_when(
+      grupo == 1 ~ "En los últimos 30 años\nla máxima cantidad de goles\nha ido a la baja",
+      grupo == 2 ~ "Últimamente, la mayoría\nde los partidos tienen\nentre 1 y 3 goles",
+      TRUE ~ ""
+      )
+    ) 
 
 datosg <- datos %>% 
   count(anio, mundial, goles_totales) 
@@ -42,10 +50,15 @@ formato_anio_mundial <- function(x  = 1923){
   
 ggplot(datosg, aes(anio, goles_totales)) +
   stat_smooth(geom = "line", data = datos, alpha = 0.1, size = 6, color = "blue", span = 0.5) +
-  geom_point(aes(size = n), alpha = 0.5) +
+  geom_point(aes(size = n, color = n), alpha = 0.5) +
+  scale_color_viridis_c(option = "B", begin = 0.2, end = 0.8, direction = -1) +
   scale_size_continuous(limits = c(1, NA), range = c(2, 5)) +
   scale_y_continuous(labels = as.integer, breaks = 0:12, minor_breaks = NULL, limits = c(0, 14)) +
-  scale_x_continuous(breaks = pull(distinct(datosg, anio)), labels = formato_anio_mundial, minor_breaks = NULL) +
+  scale_x_continuous(
+    breaks = pull(distinct(datosg, anio)),
+    labels = formato_anio_mundial, 
+    minor_breaks = NULL,
+    limits = c(NA, 2040)) +
   geom_text(
     aes(xc, yc, label = lbl),
     data = tibble(
@@ -63,14 +76,14 @@ ggplot(datosg, aes(anio, goles_totales)) +
     nudge_y = 1,
     nudge_x = -1,
     family = "Roboto Condensed",
-    force = 200,
+    force = 15,
     size = 3,
     label.r = 0.05,
     color  = "gray50",
     seed = 1235
     ) +
   geom_mark_rect(
-    aes(fill = notar, label = descripcion, filter = notar), 
+    aes(fill = notar, label = descripcion, group = grupo, filter = grupo != 0), 
     label.colour = "gray50",
     label.fontface = "plain",
     label.family = "Roboto Condensed",
@@ -80,18 +93,21 @@ ggplot(datosg, aes(anio, goles_totales)) +
     fill = "blue",
     alpha = 0.05,
     color = "transparent"
-    )  +
+    ) +
   theme(
-    axis.text.x = element_text(angle = 45, hjust = 1, size = 8),
+    axis.text.x = element_text(angle = 40, hjust = 1, size = 8),
     legend.position = "none",
     panel.grid.major = element_line(color = "gray90", size = 0.7, linetype = 2),
+    axis.title.y = element_text(hjust = 0.5)
     ) +
   labs(
-    title = "Distribución de goles por partido para cada mundial",
-    subtitle = "Cada punto representa la cantidad de partidos con dicha cantidad de goles en cada mundial",
-    caption = "#DatosDeMiercoles por @jbkunst",
+    title = "Goooooles por partido!!!!!",
+    subtitle = "Cada punto representa la cantidad de partidos con dicha cantidad de goles",
+    caption = "#DatosDeMiercoles por @jbkunst\njkunst.com",
     x = NULL,
-    y = NULL
+    y = "Cantidad de goles"
     )
   
+
+ggsave(filename = "R/2019-04-10/imagen_1.png", width = 16, height = 9)
   
