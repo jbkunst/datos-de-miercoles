@@ -10,7 +10,7 @@ datos <- read_tsv("https://raw.githubusercontent.com/cienciadedatos/datos-de-mie
 
 datos <- datos %>% 
   mutate(
-    mundial = str_c(anfitrion, " '", anio),
+    mundial = str_c(anfitrion, " '", str_sub(anio, -2)),
     goles_totales = equipo_1_final + equipo_2_final,
     partido = str_c(equipo_1, equipo_1_final, "-", equipo_2_final, equipo_2, sep = " ")
   ) %>% 
