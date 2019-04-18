@@ -109,5 +109,5 @@ ggplot(datosg, aes(anio, goles_totales)) +
     )
   
 
-ggsave(filename = "R/2019-04-10/imagen_1.png", width = 16, height = 9)
+ggsave(filename = "R/2019/2019-04-10/imagen_1.png", width = 16, height = 9)
   
