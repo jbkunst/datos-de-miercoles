@@ -127,7 +127,8 @@ ggplot(lealtades, aes(x, y, color = lealtad, label = lealtad, size = degree)) +
   geom_point() +
   geom_text() +
   scale_size(range = c(3, 6)) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  labs(title = "Layout con igraph")
 
 lealtades <- lealtades %>% 
   mutate(rn = row_number()) %>% 
@@ -141,7 +142,8 @@ ggplot(lealtades, aes(x, y, color = lealtad, label = lealtad, size = degree)) +
   geom_point() +
   geom_text() +
   scale_size(range = c(3, 6)) +
-  theme(legend.position = "none")
+  theme(legend.position = "none") +
+  labs(title = "Layout obteniendo en cada eje valores equidistantes")
 
 
 # personajes: posicion ----------------------------------------------------
@@ -193,7 +195,7 @@ SEED <- 123
 
 # este un parametro para probar animaciones y reducir las
 # instancias de tiempo
-T_MAX <- 2
+T_MAX <- 7
 
 p <- ggplot() +
   # personajes importantes etiquetas
@@ -256,6 +258,7 @@ p <- ggplot() +
     axis.ticks = element_blank(),
     rect = element_rect(fill = FONDO, color = FONDO),
     text  = element_text(family = FUENTE, colour = COLOR1, size = 15),
+    plot.title = element_text(family = FUENTE, colour = COLOR1, size = 25),
     plot.subtitle = element_text(family = FUENTE2, colour = COLOR1, size = 13),
     plot.caption = element_text(family = FUENTE2, colour = COLOR1, size = 10),
   )
@@ -276,11 +279,11 @@ if(T_MAX < 7) {
 } else {
   animate(p, width = 1000, height = 800, duration = 8*3, fps = 30)
 }
-
-gganimate::anim_save(
-  "R/2019/2019-04-17/GOT-lealtades.gif", p,
-  width = 1000, height = 800, duration = 8*2, fps = 30
-)
+ 
+# gganimate::anim_save(
+#   "R/2019/2019-04-17/GOT-lealtades.gif", p,
+#   width = 1000, height = 800, duration = 8*3, fps = 30
+# )
 
 
 
