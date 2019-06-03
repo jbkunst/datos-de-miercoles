@@ -32,7 +32,7 @@ terremotos <- terremotos %>%
   mutate_if(is.numeric, replace_na, 0)
 
 terremotos2 <- terremotos %>% 
-  filter(year(fecha) == max(year(fecha)))
+  filter(year(fecha) >= max(year(fecha) - 0))
  
 p <- ggplot(data = terremotos2) +
   geom_polygon(
@@ -54,12 +54,15 @@ p <- ggplot(data = terremotos2) +
 
 p
 
-panim <- p +
-  transition_states(fecha, wrap = F, transition_length = 0) +
-  shadow_wake(0.4)
-
 nd <- terremotos2 %>% 
   distinct(fecha) %>% 
   nrow()
 
-animate(panim, nframes = nd)
+T <- 2
+
+panim <- p +
+  transition_states(fecha) +
+  shadow_wake(1/nd/T*30) + # para que los puntos salgan lentamente (ver otras funciones)
+  labs(title = "Esta temblando!!", subtitle = "fecha: {closest_state}" ,caption = "#DatosDeMieRcoles")
+
+animate(panim, nframes = T * nd)
